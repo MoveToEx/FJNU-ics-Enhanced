@@ -1,6 +1,6 @@
 # FJNU-ics-Enhanced
 
-Login your account, fetch schedule, generate ics file all in one page!
+Login your account, fetch schedule, generate ics file all on one page!
 
 ## Installation
 
@@ -21,9 +21,9 @@ Since FJNU system has no way of knowing the actual semester progress, this progr
 
 The generation of ics file is dependent on this date, so make sure it is correct.  
 
-## Terms
+## Before use
 
-As FJNU does not allow cross-domain requests, all the requests are done by the server.  
+As FJNU does not allow cross-domain requests, all the requests are invoked by the server.  
 This means the password is transported to the server, and then to FJNU server.  
 The first transportation does not involve any encryption, so make sure your Internet connection is safe.
 
