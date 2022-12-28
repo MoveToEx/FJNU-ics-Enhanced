@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=5.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <link rel='stylesheet' href='/css/mdui.min.css' />
+    <link rel='stylesheet' href='/css/font-awesome.min.css' />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/mdui.min.js"></script>
+</head>
+
+<body class="mdui-appbar-with-toolbar">
+
+    <div class="mdui-drawer mdui-drawer-close">
+        <div class="mdui-list">
+            <a class="mdui-list-item mdui-ripple" href="/">
+                <i class="mdui-list-item-icon mdui-icon material-icons">home</i>
+                <div class="mdui-list-item-content">Home</div>
+            </a>
+            <div class="mdui-divider"></div>
+            <a class="mdui-list-item mdui-ripple" href="/images/donate.png" target="_blank">
+                <i class="mdui-list-item-icon mdui-icon material-icons">monetization_on</i>
+                <div class="mdui-list-item-content">Donate</div>
+            </a>
+            <a class="mdui-list-item mdui-ripple mdui-list-item-active" href="/impl">
+                <i class="mdui-list-item-icon mdui-icon material-icons">layers</i>
+                <div class="mdui-list-item-content">Impletation</div>
+            </a>
+
+        </div>
+    </div>
+
+
+    <header class="mdui-toolbar mdui-color-indigo mdui-appbar-fixed">
+        <a class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '.mdui-drawer'}">
+            <i class="mdui-icon material-icons">menu</i>
+        </a>
+        <a href="/" class="mdui-typo-title">
+            <%= title %>
+        </a>
+        <div class="mdui-toolbar-spacer"></div>
+    </header>
+
+    <div class="mdui-center" style="width: 60%">
+        <p>
+            Note that FJNU system is dependent on cookies to identify users. <br />
+            So you need a cookie jar over the whole session.
+        </p>
+
+        <p>
+            Besides, the following requests may differ from those captured in a real user scenario. <br />
+            Because many of the headers and requests are not necessary for our object. <br />
+            Like the header specifying content type and the request to the school logo. <br />
+            These modifications have been tested and will not affect the result.
+        </p>
+
+        <p>
+            Before login requests, the page asks the server for some javascript files. <br />
+            And among them is the key scripts crucial for login encryption. <br />
+            The following files are related to the RSA encryption: <br />
+        </p>
+
+        <div>
+            <i
+                class="material-icons mdui-icon">insert_drive_file</i>/zftal-ui-v5-1.0.2/assets/plugins/crypto/rsa/jsbn.js
+            <br />
+            <i
+                class="material-icons mdui-icon">insert_drive_file</i>/zftal-ui-v5-1.0.2/assets/plugins/crypto/rsa/prng4.js
+            <br />
+            <i class="material-icons mdui-icon">insert_drive_file</i>/zftal-ui-v5-1.0.2/assets/plugins/crypto/rsa/rng.js
+            <br />
+            <i class="material-icons mdui-icon">insert_drive_file</i>/zftal-ui-v5-1.0.2/assets/plugins/crypto/rsa/rsa.js
+            <br />
+            <i
+                class="material-icons mdui-icon">insert_drive_file</i>/zftal-ui-v5-1.0.2/assets/plugins/crypto/rsa/base64.js
+            <br />
+        </div>
+
+        <p>
+            The scripts above are integrated into a single js file and placed in /js folder.
+        </p>
+
+        <p>
+            The first request is to initialize a session and leave some cookies.
+        </p>
+        <div class="mdui-panel" mdui-panel>
+
+            <div class="mdui-panel-item">
+                <div class="mdui-panel-item-header">
+                    <div class="mdui-panel-item-title">Request</div>
+                    <div class="mdui-panel-item-summary">#1</div>
+                    <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-panel-item-body">
+                    <code>
+                        GET /jwglxt/js/globalweb/login/login.js?ver=27802686 HTTP/1.1<br/>
+                        Host: jwglxt.fjnu.edu.cn<br/>
+                        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36<br/>
+                        Referer: https://jwglxt.fjnu.edu.cn/jwglxt/xtgl/login_slogin.html<br/>
+                    </code>
+                </div>
+            </div>
+
+        </div>
+
+        <p>
+            This request is expected to return an HTML page. <br />
+            The page contains a CSRF token, which is the value of the invisible input box with an id of
+            <code>csrftoken</code>. <br />
+        </p>
+
+        <p>
+            Next, ask for RSA public key.
+        </p>
+
+        <div class="mdui-panel" mdui-panel>
+
+            <div class="mdui-panel-item">
+                <div class="mdui-panel-item-header">
+                    <div class="mdui-panel-item-title">Request</div>
+                    <div class="mdui-panel-item-summary">#2</div>
+                    <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-panel-item-body">
+                    <code>
+                        GET /jwglxt/xtgl/login_getPublicKey.html?time=1671350589387 HTTP/1.1<br />
+                        Host: jwglxt.fjnu.edu.cn<br />
+                        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36<br />
+                        Referer: https://jwglxt.fjnu.edu.cn/jwglxt/xtgl/login_slogin.html<br />
+                    </code>
+                </div>
+            </div>
+
+        </div>
+
+        <p>
+            The public key is returned in the form of <code>{"modulus": "", "exponent": ""}</code> <br />
+            It is used for encryption. <br />
+            See <a href="/js/encrypt.js">script</a> for detailed implementation. <br />
+        </p>
+
+        <p>
+            The next step is to logout previous accounts.
+        </p>
+
+        <div class="mdui-panel" mdui-panel>
+
+            <div class="mdui-panel-item">
+                <div class="mdui-panel-item-header">
+                    <div class="mdui-panel-item-title">Request</div>
+                    <div class="mdui-panel-item-summary">#3</div>
+                    <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-panel-item-body">
+                    <code>
+                        POST /jwglxt/xtgl/login_logoutAccount.html HTTP/1.1<br/>
+                        Host: jwglxt.fjnu.edu.cn<br/>
+                        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36<br/>
+                        Origin: https://jwglxt.fjnu.edu.cn<br/>
+                        Referer: https://jwglxt.fjnu.edu.cn/jwglxt/xtgl/login_slogin.html<br/>
+                    </code>
+                </div>
+            </div>
+
+        </div>
+
+        <p>
+            Next comes the login request. <br />
+            The request accepts a query string as request body, and takes 4 arguments: <br />
+        <ul>
+            <li><code>csrftoken</code>: The CSRF token mentioned in Request #1</li>
+            <li><code>language</code>: <code>zh_CN</code></li>
+            <li><code>yhm</code>: User ID</li>
+            <li><code>mm</code>: Encrypted password</li>
+        </ul>
+        </p>
+
+        <div class="mdui-panel" mdui-panel>
+
+            <div class="mdui-panel-item">
+                <div class="mdui-panel-item-header">
+                    <div class="mdui-panel-item-title">Request</div>
+                    <div class="mdui-panel-item-summary">#4</div>
+                    <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-panel-item-body">
+                    <code>
+                        POST /jwglxt/xtgl/login_slogin.html?time=1671350589380 HTTP/1.1 <br />
+                        Host: jwglxt.fjnu.edu.cn <br />
+                        Origin: https://jwglxt.fjnu.edu.cn <br />
+                        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 <br />
+                        Referer: https://jwglxt.fjnu.edu.cn/jwglxt/xtgl/login_slogin.html <br />
+                    </code>
+                </div>
+            </div>
+
+        </div>
+
+        <p>
+            If login succeeds, the request will be redirected to <code>/jwglxt/xtgl/login_slogin.html</code>, and then <code>jwglxt/xtgl/index_initMenu.html</code> <br />
+            Otherwise, the request will return an HTML page that contains a prompt that the user id or password is invalid. <br />
+        </p>
+
+        <div class="mdui-panel" mdui-panel>
+
+            <div class="mdui-panel-item">
+                <div class="mdui-panel-item-header">
+                    <div class="mdui-panel-item-title">Request</div>
+                    <div class="mdui-panel-item-summary">#5</div>
+                    <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-panel-item-body">
+                    <code>
+                        POST /jwglxt/kbcx/xskbcx_cxXsgrkb.html?gnmkdm=N253508&su={UESR ID} HTTP/1.1 <br />
+                        Host: jwglxt.fjnu.edu.cn <br />
+                        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 <br />
+                        Origin: https://jwglxt.fjnu.edu.cn <br />
+                        Referer: https://jwglxt.fjnu.edu.cn/jwglxt/kbcx/xskbcx_cxXskbcxIndex.html?gnmkdm=N253508&layout=default&su={USER ID}<br />
+                    </code>
+                </div>
+            </div>
+
+        </div>
+
+        <p>
+            Note that the <code>{USER ID}</code> here is meant to be replaced with your user id. <br/>
+            If no error occurs, the request will return a JSON containing the class schedule.
+        </p>
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=5.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <link rel='stylesheet' href='/css/mdui.min.css' />
+    <link rel='stylesheet' href='/css/font-awesome.min.css' />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/mdui.min.js"></script>
+    <script src="/js/FileSaver.min.js"></script>
+
+    <script>
+        function download(text) {
+            var link = document.createElement('a');
+            link.href = 'data:text/calendar;charset=utf-8,' + encodeURI(text);
+            link.download = "calendar.ics";
+            link.click();
+        }
+        function submit() {
+            var data = {
+                'uid': $('#uid').val(),
+                'password': $('#password').val(),
+                'year': $('#year').val(),
+                'semester': $('#semester').val(),
+                'start': Number(new Date($('#date').val()).getTime())
+            };
+            $('#submit').attr('disabled', true);
+            $('#submit > i').removeClass('fa-paper-plane-o').addClass('fa-spin').addClass('fa-cog');
+            $.post('/api/ics', data, (data, status) => {
+                // window.open('data:text/calendar;charset=utf8,' + encodeURI(data));
+                download("BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\nPRODID:adamgibbons/ics\n" + data);
+                $('#submit').attr('disabled', false);
+                $('#submit > i').addClass('fa-paper-plane-o').removeClass('fa-spin').removeClass('fa-cog');
+            }).fail((xhr, status, error) => {
+                var dlg = new mdui.Dialog('#error-dialog');
+                $('#error-prompt').text(error);
+                dlg.open();
+                $('#submit').attr('disabled', false);
+                $('#submit > i').addClass('fa-paper-plane-o').removeClass('fa-spin').removeClass('fa-cog');
+            });
+        }
+    </script>
+</head>
+
+<body class="mdui-appbar-with-toolbar">
+
+    <div class="mdui-drawer mdui-drawer-close">
+        <div class="mdui-list">
+            <a class="mdui-list-item mdui-ripple mdui-list-item-active" href="/">
+                <i class="mdui-list-item-icon mdui-icon material-icons">home</i>
+                <div class="mdui-list-item-content">Home</div>
+            </a>
+            <div class="mdui-divider"></div>
+            <a class="mdui-list-item mdui-ripple" href="/images/donate.png" target="_blank">
+                <i class="mdui-list-item-icon mdui-icon material-icons">monetization_on</i>
+                <div class="mdui-list-item-content">Donate</div>
+            </a>
+            <a class="mdui-list-item mdui-ripple" href="/impl">
+                <i class="mdui-list-item-icon mdui-icon material-icons">layers</i>
+                <div class="mdui-list-item-content">Impletation</div>
+            </a>
+
+        </div>
+    </div>
+
+    <header class="mdui-toolbar mdui-color-indigo mdui-appbar-fixed">
+        <a class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '.mdui-drawer'}">
+            <i class="mdui-icon material-icons">menu</i>
+        </a>
+        <a href="/" class="mdui-typo-title">
+            <%= title %>
+        </a>
+        <div class="mdui-toolbar-spacer"></div>
+    </header>
+
+    <div class="mdui-center">
+        <p class="mdui-center" style="text-align: center;">
+            Please note that your information (including password) is sent without any encryption.
+            <br />
+            Make sure that your Internet connection is safe.
+            <br />
+            Also, this will ask the FJNU server to create a new login session,
+            <br />
+            i.e. your existing login session will be logged out forcibly.
+        </p>
+    </div>
+
+    <div class="mdui-center" style="width: 50%">
+        <div class="mdui-textfield mdui-textfield-floating-label">
+            <label class="mdui-textfield-label">User ID</label>
+            <input class="mdui-textfield-input" id="uid" />
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label">
+            <label class="mdui-textfield-label">Password</label>
+            <input class="mdui-textfield-input" id="password" type="password" />
+        </div>
+        <br />
+        <div>
+            <select class="mdui-select" id="year" mdui-select>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+            </select>
+            <select class="mdui-select" id="semester" mdui-select>
+                <option value="3">1st semester</option>
+                <option value="12">2nd semester</option>
+                <option value="16">3rd semester</option>
+            </select>
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label">
+            <label class="mdui-textfield-label">First Monday of the school year</label>
+            <input class="mdui-textfield-input" id="date" type="text" pattern="^\d{4}\/\d{1,2}\/\d{1,2}$" required />
+            <div class="mdui-textfield-error">Input string does not satisfy YYYY/MM/DD</div>
+            <div class="mdui-textfield-helper">YYYY/MM/DD</div>
+        </div>
+        <br />
+        <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-center" id="submit" onclick="submit();">
+            <i class="fa fa-paper-plane-o"></i>Submit
+        </button>
+    </div>
+
+    <div class="mdui-dialog" id="error-dialog">
+        <div class="mdui-dialog-title"><i class="mdui-icon material-icons">error</i> Error</div>
+        <div class="mdui-dialog-content">Error occurred when retriving request data: <span id="error-prompt"></span>
+        </div>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>OK</button>
+        </div>
+    </div>
+</body>
+
+</html>
