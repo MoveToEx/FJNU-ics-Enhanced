@@ -11,48 +11,40 @@
     <link rel='stylesheet' href='/css/font-awesome.min.css' />
     <script src="/js/jquery.min.js"></script>
     <script src="/js/mdui.min.js"></script>
-    <script src="/js/FileSaver.min.js"></script>
 
     <script>
-        function download(text) {
-            var link = document.createElement('a');
-            link.href = 'data:text/calendar;charset=utf-8,' + encodeURI(text);
-            link.download = "calendar.ics";
-            link.click();
-        }
         function submit() {
             var data = {
                 'uid': $('#uid').val(),
                 'password': $('#password').val(),
                 'year': $('#year').val(),
                 'semester': $('#semester').val(),
-                'start': Number(new Date($('#date').val()).getTime())
+                'start': $('#date').val()
             };
-            $('#submit').attr('disabled', true);
-            $('#submit > i').removeClass('fa-paper-plane-o').addClass('fa-spin').addClass('fa-cog');
-            $.post('/api/ics', data, (data, status) => {
-                // window.open('data:text/calendar;charset=utf8,' + encodeURI(data));
-                download("BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\nPRODID:adamgibbons/ics\n" + data);
-                $('#submit').attr('disabled', false);
-                $('#submit > i').addClass('fa-paper-plane-o').removeClass('fa-spin').removeClass('fa-cog');
-            }).fail((xhr, status, error) => {
-                var dlg = new mdui.Dialog('#error-dialog');
-                $('#error-prompt').text(error);
+            var dlg = new mdui.Dialog('#error-dialog');
+            if ($('#date').val().search(/\d{4}\/\d{1,2}\/\d{1,2}/) == -1) {
+                $('#error-prompt').text('日期格式错误，请重试');
                 dlg.open();
-                $('#submit').attr('disabled', false);
-                $('#submit > i').addClass('fa-paper-plane-o').removeClass('fa-spin').removeClass('fa-cog');
-            });
+                return;
+            }
+            if (data['uid'].search(/\d{12}/) == -1) {
+                $('#error-prompt').text('学号无效，请重试');
+                dlg.open();
+                return;
+            }
+            var elem = document.createElement('a');
+            window.open(`/api/gen.ics?param=` + encodeURIComponent(JSON.stringify(data)));
         }
     </script>
 </head>
 
-<body class="mdui-appbar-with-toolbar">
+<body class="mdui-appbar-with-toolbar mdui-center">
 
     <div class="mdui-drawer mdui-drawer-close">
         <div class="mdui-list">
             <a class="mdui-list-item mdui-ripple mdui-list-item-active" href="/">
                 <i class="mdui-list-item-icon mdui-icon material-icons">home</i>
-                <div class="mdui-list-item-content">Home</div>
+                <div class="mdui-list-item-content">首页</div>
             </a>
             <div class="mdui-divider"></div>
             <a class="mdui-list-item mdui-ripple" href="/impl">
@@ -73,58 +65,67 @@
         <div class="mdui-toolbar-spacer"></div>
     </header>
 
-    <div class="mdui-center">
-        <p class="mdui-center" style="text-align: center;">
-            Please note that your information (including password) is sent without any encryption.
-            <br />
-            Make sure that your Internet connection is safe.
-            <br />
-            Also, this will ask the FJNU server to create a new login session,
-            <br />
-            i.e. your existing login session will be logged out forcibly.
-        </p>
-    </div>
+    <div class="mdui-container">
 
-    <div class="mdui-center" style="width: 50%">
-        <div class="mdui-textfield mdui-textfield-floating-label">
-            <label class="mdui-textfield-label">User ID</label>
-            <input class="mdui-textfield-input" id="uid" />
-        </div>
-        <div class="mdui-textfield mdui-textfield-floating-label">
-            <label class="mdui-textfield-label">Password</label>
-            <input class="mdui-textfield-input" id="password" type="password" />
-        </div>
-        <br />
-        <div>
-            <select class="mdui-select" id="year" mdui-select>
-                <option value="2022">2022</option>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-            </select>
-            <select class="mdui-select" id="semester" mdui-select>
-                <option value="3">1st semester</option>
-                <option value="12">2nd semester</option>
-                <option value="16">3rd semester</option>
-            </select>
-        </div>
-        <div class="mdui-textfield mdui-textfield-floating-label">
-            <label class="mdui-textfield-label">First Monday of the school year</label>
-            <input class="mdui-textfield-input" id="date" type="text" pattern="^\d{4}\/\d{1,2}\/\d{1,2}$" required />
-            <div class="mdui-textfield-error">Input string does not satisfy YYYY/MM/DD</div>
-            <div class="mdui-textfield-helper">YYYY/MM/DD</div>
-        </div>
-        <br />
-        <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-center" id="submit" onclick="submit();">
-            <i class="fa fa-paper-plane-o"></i>Submit
-        </button>
-    </div>
 
-    <div class="mdui-dialog" id="error-dialog">
-        <div class="mdui-dialog-title"><i class="mdui-icon material-icons">error</i> Error</div>
-        <div class="mdui-dialog-content">Error occurred when retriving request data: <span id="error-prompt"></span>
+        <div class="mdui-center">
+            <p class="mdui-center" style="text-align: center;">
+                请注意您的数据在发送时并未经过任何加密，故请确保您的网络环境安全。
+                <br />
+                您在使用过程中所产生的一切后果，包括课表错误、网络劫持导致的数据泄漏等，均由您自身承担。
+                <br />
+                此外，这一操作会强制注销您在官网的登录会话。
+                <br />
+                继续使用即代表您理解并同意上述条款。
+                <br />
+                <b>请务必使用最新版 Chrome 、 Edge 或 Safari 访问此网站，其他浏览器可能出现不可预知的兼容性错误</b>
+            </p>
         </div>
-        <div class="mdui-dialog-actions">
-            <button class="mdui-btn mdui-ripple" mdui-dialog-close>OK</button>
+
+
+        <div class="mdui-center" style="width: 80%">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">学号</label>
+                <input class="mdui-textfield-input" id="uid" pattern="^\d{12}$"/>
+                <div class="mdui-textfield-error">格式错误(12位数字)</div>
+                <div class="mdui-textfield-helper">应为12位阿拉伯数字</div>
+            </div>
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">密码</label>
+                <input class="mdui-textfield-input" id="password" type="password" />
+            </div>
+            <br />
+            <div>
+                <select class="mdui-select" id="year" mdui-select>
+                    <option value="2022">2022学年</option>
+                    <option value="2023">2023学年</option>
+                    <option value="2024">2024学年</option>
+                </select>
+                <select class="mdui-select" id="semester" mdui-select>
+                    <option value="3">第一学期</option>
+                    <option value="12">第二学期</option>
+                    <option value="16">第三学期</option>
+                </select>
+            </div>
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">该学期首个周一的日期</label>
+                <input class="mdui-textfield-input" id="date" type="text" pattern="^\d{4}\/\d{1,2}\/\d{1,2}$"
+                    required />
+                <div class="mdui-textfield-error">格式错误(YYYY/MM/DD)</div>
+                <div class="mdui-textfield-helper">格式为YYYY/MM/DD，如2022/12/26</div>
+            </div>
+            <br />
+            <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-center" id="submit" onclick="submit();">
+                <i class="fa fa-paper-plane-o"></i>提交
+            </button>
+        </div>
+
+        <div class="mdui-dialog" id="error-dialog">
+            <div class="mdui-dialog-title"><i class="mdui-icon material-icons">error</i> 错误</div>
+            <div class="mdui-dialog-content"><span id="error-prompt"></span></div>
+            <div class="mdui-dialog-actions">
+                <button class="mdui-btn mdui-ripple" mdui-dialog-close>OK</button>
+            </div>
         </div>
     </div>
 </body>
